@@ -57,6 +57,7 @@
         <a class="ml-3" href="{{ route('settings') }}">🕰 Основные</a>
         <a class="ml-3" href="{{ route('settings_cb_and_actions') }}">🤑 КБ и акции</a>
         <a class="ml-3" href="{{ route('settings_payments') }}">💳 Платежи</a>
+        <a class="ml-3" href="{{ route('settings_working_hours') }}">🕐 Робочий час</a>
     @endpermission
 
 </div>

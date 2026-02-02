@@ -12,6 +12,7 @@ use App\Http\Controllers\BotSeaBattleController;
 use App\Http\Controllers\BotSettingsCbAndActionsController;
 use App\Http\Controllers\BotSettingsController;
 use App\Http\Controllers\BotSettingsPaymentsController;
+use App\Http\Controllers\BotSettingsWorkingHoursController;
 use App\Http\Controllers\BotStatController;
 use App\Http\Controllers\BotUserHistoryController;
 use App\Http\Controllers\BotUsersController;
@@ -258,6 +259,14 @@ Route::middleware(['auth', 'role:,admin_panel'])->prefix('admin')->group(functio
             Route::post('/settings_cb_and_actions_save', [BotSettingsCbAndActionsController::class, 'settings_cb_and_actions_save'])->name('settings_cb_and_actions_save');
             Route::get('/settings_payments', [BotSettingsPaymentsController::class, 'execute'])->name('settings_payments');
             Route::post('/settings_payments_save', [BotSettingsPaymentsController::class, 'settings_payments_save'])->name('settings_payments_save');
+            Route::get('/settings_working_hours', [BotSettingsWorkingHoursController::class, 'execute'])->name('settings_working_hours');
+            Route::post('/settings_working_hours_schedule_save', [BotSettingsWorkingHoursController::class, 'saveSchedule'])->name('settings_working_hours_schedule_save');
+            Route::post('/settings_working_hours_closure_save', [BotSettingsWorkingHoursController::class, 'saveClosure'])->name('settings_working_hours_closure_save');
+            Route::post('/settings_working_hours_closure_delete', [BotSettingsWorkingHoursController::class, 'deleteClosure'])->name('settings_working_hours_closure_delete');
+            Route::post('/settings_working_hours_settings_save', [BotSettingsWorkingHoursController::class, 'saveSettings'])->name('settings_working_hours_settings_save');
+            Route::post('/settings_working_hours_quick_pause', [BotSettingsWorkingHoursController::class, 'quickPause'])->name('settings_working_hours_quick_pause');
+            Route::post('/settings_working_hours_resume_pause', [BotSettingsWorkingHoursController::class, 'resumePause'])->name('settings_working_hours_resume_pause');
+            Route::get('/settings_working_hours_status', [BotSettingsWorkingHoursController::class, 'getStatus'])->name('settings_working_hours_status');
         });
 
         Route::post('/send_message_to_user', [PostsController::class, 'sendMessageToUser'])->name('send_message_to_user');

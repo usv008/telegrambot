@@ -48,6 +48,7 @@ use App\Models\PrestaShop_Specific_Price;
 use App\Models\PrestaShop_WD_MegaMenu;
 use App\Models\SimplaOrders;
 use App\Models\SimplaStreetList;
+use App\Services\WorkingHoursService;
 use http\Env\Request;
 use Illuminate\Http\Request as LRequest;
 use Illuminate\Support\Facades\Http;
@@ -66,8 +67,14 @@ class BotMenuNewController extends Controller
         $input = $request->except('_token');
         $category_select = isset($input['category_select']) && $input['category_select'] !== null ? $input['category_select'] : 3;
 
+        $whStatus = WorkingHoursService::isCurrentlyOpen();
+        $whMessage = WorkingHoursService::getClosedMessage();
+
         $data = [
             'category_select' => $category_select,
+            'wh_is_open' => $whStatus['is_open'],
+            'wh_message' => $whMessage,
+            'wh_next_open' => $whStatus['next_open'],
         ];
         return view('telegram.menu', $data);
     }
@@ -272,6 +279,15 @@ class BotMenuNewController extends Controller
 
     public static function addProductToCart(LRequest $request)
     {
+        // Working hours check
+        $whStatus = WorkingHoursService::isCurrentlyOpen();
+        if (!$whStatus['is_open'] && WorkingHoursService::getSetting('allow_future_orders', '1') != '1') {
+            return response()->json([
+                'working_hours_closed' => true,
+                'message' => WorkingHoursService::getClosedMessage(),
+            ]);
+        }
+
         $input = $request->except('_token');
         if (!isset($input['user_id']) || $input['user_id'] == null || $input['user_id'] < 0)
             return null;
@@ -628,9 +644,13 @@ class BotMenuNewController extends Controller
         $category_select = 3;
         $menus = BotMenu::where('enabled', 1)->orderBy('menu_sort', 'asc')->get();
 
+        $whStatus = WorkingHoursService::isCurrentlyOpen();
+
         $data = [
             'category_select' => $category_select,
             'menus' => $menus,
+            'wh_is_open' => $whStatus['is_open'],
+            'wh_next_open' => $whStatus['next_open'],
         ];
         return view('telegram.main', $data);
     }
@@ -659,6 +679,13 @@ class BotMenuNewController extends Controller
 
     public static function getTimeForOrder(LRequest $request)
     {
+        // Working hours check — allow if future orders are permitted
+        $whStatus = WorkingHoursService::isCurrentlyOpen();
+        if (!$whStatus['is_open'] && WorkingHoursService::getSetting('allow_future_orders', '1') != '1') {
+            $closedMsg = WorkingHoursService::getClosedMessage();
+            return json_encode(['success' => false, 'working_hours_closed' => true, 'message' => $closedMsg]);
+        }
+
         $input = $request->except('_token');
         if (!isset($input['date']) || $input['date'] == null || $input['date'] == '')
             return null;
@@ -878,6 +905,13 @@ class BotMenuNewController extends Controller
 
     public static function addOrder(LRequest $request)
     {
+        // Working hours check — allow if future orders are permitted
+        $whStatus = WorkingHoursService::isCurrentlyOpen();
+        if (!$whStatus['is_open'] && WorkingHoursService::getSetting('allow_future_orders', '1') != '1') {
+            $closedMsg = WorkingHoursService::getClosedMessage();
+            return json_encode(['success' => false, 'working_hours_closed' => true, 'message' => $closedMsg]);
+        }
+
         $input = $request->except('_token');
         $errors = [];
         $data = [];

@@ -260,6 +260,20 @@
                     cache: false
                 }).done(function(data) {
                     tg.MainButton.hideProgress();
+
+                    // Working hours check
+                    if (data && data['working_hours_closed']) {
+                        button.classList.remove('loading');
+                        button.classList.add('ready');
+                        disabled = false;
+                        var whMsg = data['message'] || 'Зараз неробочий час. Спробуйте пізніше.';
+                        $('#addProduct_price_text').html('додати за '+$('#addProduct').attr('data-price')+' грн');
+                        $("#modal_body").html(button_close+'<div style="padding: 30px 20px; text-align: center;"><div style="font-size: 48px; margin-bottom: 15px;">🕐</div><div style="font-size: 16px; color: #333; line-height: 1.5;">'+whMsg.replace(/\n/g, '<br>')+'</div></div>');
+                        $("#modal_footer").html("");
+                        $("#modalDialog").modal("show");
+                        return;
+                    }
+
                     var inputs = $(".ingredients_inputs");
                     for (var n = 0; n < inputs.length; n++) {
                         $(inputs[n]).val(0);
@@ -293,7 +307,14 @@
                         $("#modal_body").html(button_close+"Щось пішло не так...");
                     }
                 }).fail(function() {
-                    $("#modal_body").html(button_close+"product_id="+$('#addProduct').attr('data-product-id')+"&price="+$('#addProduct').attr('data-price'));
+                    tg.MainButton.hideProgress();
+                    button.classList.remove('loading');
+                    button.classList.add('ready');
+                    disabled = false;
+                    $('#addProduct_price_text').html('додати за '+$('#addProduct').attr('data-price')+' грн');
+                    $("#modal_body").html(button_close+"Щось пішло не так. Спробуйте ще раз.");
+                    $("#modal_footer").html("");
+                    $("#modalDialog").modal("show");
                 });
             }
 

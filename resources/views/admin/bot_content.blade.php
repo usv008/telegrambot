@@ -34,6 +34,8 @@
         @include('admin.settings_cb_and_actions_content')
     @elseif ($page == 'settings_payments')
         @include('admin.settings_payments_content')
+    @elseif ($page == 'settings_working_hours')
+        @include('admin.settings_working_hours_content')
 {{--    @elseif ($cat_prod == 'sizes')--}}
 {{--        @include('admin.sizes_content')--}}
     @endif

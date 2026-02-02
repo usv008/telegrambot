@@ -266,6 +266,19 @@
                     cache: false
                 }).done(function(data) {
                     tg.MainButton.hideProgress();
+
+                    // Working hours check
+                    if (data && data['working_hours_closed']) {
+                        this_button.classList.remove('loading');
+                        this_button.classList.add('ready');
+                        disabled = false;
+                        var whMsg = data['message'] || 'Зараз неробочий час. Спробуйте пізніше.';
+                        $("#modal_body").html(button_close+'<div style="padding: 30px 20px; text-align: center;"><div style="font-size: 48px; margin-bottom: 15px;">🕐</div><div style="font-size: 16px; color: #333; line-height: 1.5;">'+whMsg.replace(/\n/g, '<br>')+'</div></div>');
+                        $("#modal_footer").html("");
+                        $("#modalDialog").modal("show");
+                        return;
+                    }
+
                     this_button.classList.add('complete');
                     this_button.classList.remove('loading');
                     // Completed stage
@@ -295,7 +308,13 @@
                         $("#modal_body").html(button_close+"Щось пішло не так...");
                     }
                 }).fail(function() {
-                    $("#modal_body").html(button_close+"product_id="+$('#addProduct').attr('data-product-id')+"&price="+$('#addProduct').attr('data-price'));
+                    tg.MainButton.hideProgress();
+                    this_button.classList.remove('loading');
+                    this_button.classList.add('ready');
+                    disabled = false;
+                    $("#modal_body").html(button_close+"Щось пішло не так. Спробуйте ще раз.");
+                    $("#modal_footer").html("");
+                    $("#modalDialog").modal("show");
                 });
             }
 
