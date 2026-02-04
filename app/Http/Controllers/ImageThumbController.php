@@ -245,8 +245,14 @@ class ImageThumbController extends Controller
                 foreach ($products as $product)
                 {
                     if (isset($product->id_default_image) && $product->id_default_image > 0) {
-                        $content = file_get_contents("https://ecopizza.com.ua/api/images/products/".$product->id."/".$product->id_default_image."/cart_default?ws_key=NXUAQSSLS82SFTVBMXCBMCFIFRPVWJZR&output_format=JSON&display=full");
-                        if ($content) $save_file = file_put_contents(public_path().'/assets/img/thumb/'.$abra_kadabra_new.$product->id.'.webp', $content);
+                        try {
+                            $content = @file_get_contents("https://ecopizza.com.ua/api/images/products/".$product->id."/".$product->id_default_image."/cart_default?ws_key=".env('PRESTASHOP_KEY')."&output_format=JSON&display=full");
+                            if ($content) {
+                                file_put_contents(public_path().'/assets/img/thumb/'.$abra_kadabra_new.$product->id.'.webp', $content);
+                            }
+                        } catch (\Exception $e) {
+                            Log::warning('Thumb download failed for product '.$product->id.': '.$e->getMessage());
+                        }
                         self::deleteFile($product, $abra_kadabra);
                     }
                 }

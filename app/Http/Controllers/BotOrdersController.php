@@ -42,9 +42,7 @@ class BotOrdersController extends Controller
             (select SUM(summa) from bot_cashback_history where bot_cashback_history.order_id = bot_orders_new.id and bot_cashback_history.type = \'OUT\') as cashback_out,
             (select SUM(summa) from bot_cashback_history where bot_cashback_history.order_id = bot_orders_new.id and bot_cashback_history.type = \'IN\') as cashback_in'
         )
-            ->orderBy('id', 'desc')
-//            ->take(10)
-            ->get();
+            ->orderBy('id', 'desc');
 
 //        dd($data);
         return Datatables::of($data)
