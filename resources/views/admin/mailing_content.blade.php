@@ -273,7 +273,7 @@
             var formData = new FormData(this);
             var variant_id = parseInt($("#variant_id").val());
 
-            if ($("#button_data").val() === 'addtocartproductfrommailing___') {
+            if ($("#button_data").val() === 'addstat_addtocartproductfrommailing___') {
 
                 if (!isNaN(variant_id) && variant_id !== 0 && variant_id > 0) {
 

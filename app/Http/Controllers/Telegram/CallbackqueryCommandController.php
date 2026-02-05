@@ -630,12 +630,26 @@ class CallbackqueryCommandController extends Controller {
             $variant_id = $arr[1];
             $button = $arr[2];
             $post_id = $arr[3];
-            BotSendingMessages::find($post_id)->increment('button'.$button);
+            $post = BotSendingMessages::find($post_id);
+            if ($post) {
+                $post->increment('button'.$button);
+            }
 
             if ($variant_id > 0) {
 //            $product_id = BotCartController::getProductVariant($variant_id)['product_id'];
                 $combination = PrestaShop_Product_Attribute::getProductIdByAttributeId($variant_id);
                 Log::debug('COMBINATION', ['combination' => $combination]);
+
+                if (!$combination) {
+                    Log::error('Combination not found for variant_id: ' . $variant_id);
+                    Request::sendMessage([
+                        'chat_id' => $user_id,
+                        'text' => 'На жаль, цей товар більше недоступний. Спробуйте обрати інший товар у меню.',
+                        'parse_mode' => 'html'
+                    ]);
+                    return ['', false, null];
+                }
+
                 $product = PrestaShop_Product::getProductById($combination->id_product);
                 Log::debug('PRODUCT', ['product' => $product]);
 

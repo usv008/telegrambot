@@ -32,12 +32,14 @@ class BotCashbackController extends Controller
 
     public static function getUserCashback($user_id)
     {
-        return BotUser::where('user_id', $user_id)->first()['cashback'];
+        $user = BotUser::where('user_id', $user_id)->first();
+        return $user ? $user->cashback : 0;
     }
 
     public static function getUserCashbackAction($user_id)
     {
-        return BotUser::where('user_id', $user_id)->first()['cashback_action'];
+        $user = BotUser::where('user_id', $user_id)->first();
+        return $user ? $user->cashback_action : 0;
     }
 
     public static function getUserCashbackAll($user_id)
