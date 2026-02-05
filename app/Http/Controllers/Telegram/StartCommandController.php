@@ -490,7 +490,7 @@ class StartCommandController extends Controller
 //        Request::sendMessage($data_admin);
 
         ///////////////// To Chat //////////////////////////
-        $data_admin = ['chat_id' => '-318301424'];
+        $data_admin = ['chat_id' => '-1002252943437'];
         $data_admin['parse_mode'] = 'html';
         $data_admin['text'] = '<a href="https://telegrambot.ecopizza.com.ua/admin/bot/users/'.$user_id.'">'.$user_id.'</a> написал в бот: '.PHP_EOL.$text
             .PHP_EOL.'<a href="https://telegrambot.ecopizza.com.ua/admin/bot/chat/'.$user_id.'">💬 перейти в чат с пользователем</a>';
@@ -515,7 +515,7 @@ class StartCommandController extends Controller
     public static function sendPhotoToOperatorsChat($message)
     {
         $user_id = $message->getFrom()->getId();
-        $data_admin = ['chat_id' => '-318301424'];
+        $data_admin = ['chat_id' => '-1002252943437'];
         $photo = $message->getPhoto()[2];
         $data_admin['photo'] = $photo->getFileId();
         $caption = '';

@@ -112,7 +112,7 @@ class CallMeCommandController extends Controller
         Request::sendMessage($data_admin);
 
         ///////////////// To Chat //////////////////////////
-        $data_admin = ['chat_id' => '-318301424'];
+        $data_admin = ['chat_id' => '-1002252943437'];
         $data_admin['parse_mode'] = 'html';
         $data_admin['text'] = '<a href="https://telegrambot.ecopizza.com.ua/admin/bot/users/'.$user_id.'">'.$user_name.'</a> ждет звонка по тел: '.$user_tel;
         $g = Request::sendMessage($data_admin);
