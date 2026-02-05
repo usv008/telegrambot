@@ -102,3 +102,24 @@ All secrets (API keys, DB credentials, Telegram tokens, payment keys, Google Map
 ## Code Style
 
 StyleCI is configured (`.styleci.yml`) with Laravel preset.
+
+## Server: File Permissions (IMPORTANT)
+
+On this server, the web application runs under the `work_new_eco_usr` user. The CLI `php` defaults to PHP 8.1 (running as `root`), while the web server may use a different PHP version via FastCGI.
+
+**NEVER run artisan commands as root.** If a log file (e.g. `storage/logs/laravel-YYYY-MM-DD.log`) is created by root, the web server won't be able to write to it and requests will fail with 500 Internal Server Error.
+
+Always use:
+```bash
+sudo -u work_new_eco_usr php artisan <command>
+```
+
+If a log file is already owned by root, fix it:
+```bash
+chown work_new_eco_usr:work_new_eco_usr storage/logs/laravel-*.log
+```
+
+## Git Convention
+
+- Усі коміт-повідомлення пишуться **українською мовою**.
+- Git user для цього репо: `usv008 <usv008@users.noreply.github.com>`.
