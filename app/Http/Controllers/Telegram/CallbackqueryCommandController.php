@@ -635,11 +635,9 @@ class CallbackqueryCommandController extends Controller {
             if ($variant_id > 0) {
 //            $product_id = BotCartController::getProductVariant($variant_id)['product_id'];
                 $combination = PrestaShop_Product_Attribute::getProductIdByAttributeId($variant_id);
-                Log::warning('COMBINATION');
-                Log::warning($combination);
+                Log::debug('COMBINATION', ['combination' => $combination]);
                 $product = PrestaShop_Product::getProductById($combination->id_product);
-                Log::warning('PRODUCT');
-                Log::warning($product);
+                Log::debug('PRODUCT', ['product' => $product]);
 
                 if ($product) {
                     $data = [

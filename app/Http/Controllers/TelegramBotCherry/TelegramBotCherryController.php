@@ -22,8 +22,7 @@ class TelegramBotCherryController extends Controller
     {
         $input = $request->json()->all();
         $inline_keyboard = null;
-        Log::warning('TELEGRAM DRINKCHERRY:');
-        Log::warning($input);
+        Log::debug('TELEGRAM DRINKCHERRY input', ['input' => $input]);
 
         // Проверяем, что пришло текстовое сообщение
         if (isset($input['message']['text'])) {
@@ -124,13 +123,7 @@ class TelegramBotCherryController extends Controller
         $client = new \GuzzleHttp\Client();
         $request = $client->post($url, ['json' => $params]);
         $result = $request->getBody();
-        Log::warning('SEND TO TELEGRAM REQUEST DRINK_CHERRY:');
-        if ($result) {
-            Log::warning($result);
-        }
-        else {
-            Log::warning('Щось зажурилося...');
-        }
+        Log::debug('TELEGRAM DRINK_CHERRY response', ['result' => (string)$result]);
         return $result;
     }
 

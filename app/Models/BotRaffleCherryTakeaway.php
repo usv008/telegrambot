@@ -28,8 +28,7 @@ class BotRaffleCherryTakeaway extends Model
     {
         $count_takeaway = (int)self::where('user_id', $user_id)->where('received', 0)->count();
         $count_cherry_win = (int)BotRaffleUsers::where('user_id', $user_id)->where('win_cherry', 1)->count();
-        Log::warning('COUNT WIN');
-        Log::warning('caout_takeaway: '.$count_takeaway.'; count win cherry: '.$count_cherry_win);
+        Log::debug('COUNT WIN - caout_takeaway: '.$count_takeaway.'; count win cherry: '.$count_cherry_win);
         return (int)$count_takeaway + (int)$count_cherry_win;
     }
 

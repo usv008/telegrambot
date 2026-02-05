@@ -99,7 +99,7 @@ class BotOrdersController extends Controller
                 $cashback_out = BotCashbackHistory::where('order_id', $input['order_id'])->where('type', 'OUT')->first();
                 $data_order->cashback_in = $cashback_in && $cashback_in->summa ? $cashback_in->summa : 0;
                 $data_order->cashback_out = $cashback_out && $cashback_out->summa ? $cashback_out->summa : 0;
-                Log::warning($data_order);
+                Log::debug('Order data for admin view', ['data_order' => $data_order]);
 //                dd($data_order[0]->simpla_id);
 
                 $data_order_content = BotOrderContent::where('order_id', $input['order_id'])->get();

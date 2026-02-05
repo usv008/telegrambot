@@ -247,17 +247,14 @@ class BotGameSeaBattleController extends Controller
         $data_edit['reply_markup'] = BotButtonsInlineController::getButtonsInlineForGameSeaBattle($user_id, $field_id, 1);
         $data_edit['message_id'] = $message_id;
         $result = Request::editMessageCaption($data_edit);
-        Log::warning("RESULT TELEGRAM:");
-        Log::warning($result);
+        Log::debug("SeaBattle result", ['result' => $result]);
 
         $waiting_users = BotGameSeaBattleUsers::getWaitingUsers($user_id);
-        Log::warning("WAITING USERS:");
-        Log::warning($waiting_users);
+        Log::debug("SeaBattle waiting users", ['waiting_users' => $waiting_users]);
         if ($waiting_users->count() > 0) {
             $opponent_user_id = $waiting_users->first()->user_id;
             $opponent_field = BotGameSeaBattleFields::getUserFieldForGame($opponent_user_id);
-            Log::warning("OPPONENT FIELD:");
-            Log::warning($opponent_field);
+            Log::debug("SeaBattle opponent field", ['opponent_field' => $opponent_field]);
             if (!$opponent_field)
                 return null;
             $search_message_id = $opponent_field->search_message_id;

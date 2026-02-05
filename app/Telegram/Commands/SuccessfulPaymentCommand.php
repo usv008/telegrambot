@@ -84,8 +84,7 @@ class SuccessfulPaymentCommand extends UserCommand
         $text = json_encode($this->getMessage()->getSuccessfulPayment());
         if ( ($text !== null) && ($text !== '') ) {
 
-            Log::warning('---------------------------- LIQPAY CALLBACK ----------------------------------');
-            Log::info($text);
+            Log::info('LIQPAY CALLBACK received', ['payment_data' => $text]);
             $inv = json_decode($text);
             $invoice_payload = $inv->{'invoice_payload'};
 
@@ -99,7 +98,7 @@ class SuccessfulPaymentCommand extends UserCommand
                 $text_ins = BotTextsController::getText($user_id, 'LiqPay', 'success');
                 $text_ins = str_replace("___ID___", $invoice_payload, $text_ins);
 
-                Log::warning('order_id: '.$invoice_payload .' - OK');
+                Log::info('LiqPay payment success', ['order_id' => $invoice_payload]);
 
                 $data['parse_mode'] = 'html';
                 $data['text']      = $text_ins;

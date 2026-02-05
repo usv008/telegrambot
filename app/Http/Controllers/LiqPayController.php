@@ -69,7 +69,7 @@ class LiqPayController extends Controller
             'reply_markup' => $inline_keyboard
         ];
         $r = Request::sendInvoice($data_pay);
-        Log::warning($r);
+        Log::debug('LiqPay sendInvoice result', ['result' => $r]);
 //        dd($data_pay, $r);
 
 //        $data['text']      = 'debug: '.$r;
@@ -125,7 +125,7 @@ class LiqPayController extends Controller
                 'reply_markup' => $inline_keyboard,
             ];
             $result = Request::sendMessage($data);
-            Log::warning($result);
+            Log::debug('LiqPay sendWidget result', ['result' => $result]);
         }
 
     }
@@ -165,8 +165,7 @@ class LiqPayController extends Controller
         echo base64_decode($data_post).'<br />';
 
         $s = base64_decode($data_post);
-        Log::warning('LIQPAY');
-        Log::warning($s);
+        Log::info('LiqPay callback received', ['data' => $s]);
         $s = json_decode($s);
 
         $chat_and_user_and_order = explode("___", $s->order_id);
@@ -179,7 +178,7 @@ class LiqPayController extends Controller
         $order = explode("_", $chat_and_user_and_order[3]);
         $order_id = $order[1];
 
-        Log::warning('------------------------- LiqPay CALLBACK -----------------------------------');
+        Log::info('LiqPay CALLBACK', ['order_id' => $order_id, 'user_id' => $user_id, 'action' => $s->action, 'status' => $s->status]);
         if ($s->action == 'pay' && $s->status == 'success') {
 //            Log::warning($s);
             $bot_api_key = env('PHP_TELEGRAM_BOT_API_KEY');

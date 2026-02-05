@@ -58,10 +58,7 @@ class CallbackQueryCherryController extends Controller
             $text = '✅ '.$user_win->name.PHP_EOL.$user_win->phone.PHP_EOL."Отримав чекушку П'яної вишні";
 
             if ($user_win->received == 0) {
-                Log::warning('USER_WIN:');
-                Log::warning('user_id: '.$user_id.'; take: '.$takeaway_id.'; phone: '.$phone);
-                Log::warning('USER_WIN:');
-                Log::warning($user_win);
+                Log::debug('Cherry USER_WIN', ['user_id' => $user_id, 'takeaway_id' => $takeaway_id, 'phone' => $phone, 'user_win' => $user_win]);
 
                 $text = $user_win->name.PHP_EOL.$user_win->phone.PHP_EOL."виграв чекушку П'яної вишні".PHP_EOL.PHP_EOL."Нехай переможець скаже тобі код, який я йому відправив.".PHP_EOL."А ти натисни на кномпу з цим кодом.";
 

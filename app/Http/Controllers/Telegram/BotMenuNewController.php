@@ -307,8 +307,7 @@ class BotMenuNewController extends Controller
         $ingredients = isset($input['ingredients']) && $input['ingredients'] !== null ? json_decode($input['ingredients'], true) : null;
         if (is_array($ingredients))
             $ingredients = $ingredients['ingredients'];
-        Log::warning('ingredients: ');
-        Log::warning($ingredients);
+        Log::debug('ingredients: ', ['ingredients' => $ingredients]);
 //        $ingredients = $ingredients['ingredients'];
 
         $product = ApiPrestaShopController::sendResponse(['resource' => 'products', 'url' => 'products/'.$input['product_id']])->first();
@@ -363,7 +362,7 @@ class BotMenuNewController extends Controller
                                     $ingredient_quantity_new = $ingredient_quantity * $quantity_new;
                                     $ingredient_price_all = bcmul($ingredient->price, $ingredient_quantity_new, 2);
                                     $update = BotCartNew::where('id', $ingredient->id)->update(['quantity' => $ingredient_quantity_new, 'price_all' => $ingredient_price_all]);
-                                    Log::warning('Add: quantity: ' . $quantity . '; ingredient_quantity: ' . $ingredient_quantity . '; quantity_new: ' . $quantity_new . '; id: ' . $ingredient->id . '; i_q_n: ' . $ingredient_quantity_new);
+                                    Log::debug('Add ingredient', ['quantity' => $quantity, 'ingredient_quantity' => $ingredient_quantity, 'quantity_new' => $quantity_new, 'id' => $ingredient->id, 'i_q_n' => $ingredient_quantity_new]);
                                     $price_with_ingredients = bcadd($price_with_ingredients, $ingredient_price_all, 2);
                                 }
                                 $product_in_cart->increment('quantity');
@@ -373,7 +372,7 @@ class BotMenuNewController extends Controller
                             }
                             if ($ingredient_not_exist === true && $products_in_cart->last() == $product_in_cart) {
                                 $add_product = self::addNewProductToCart($input['user_id'], $product, $combination_id, $input['price'], $ingredients);
-                                Log::warning('add new product line 245');
+                                Log::debug('add new product line 245');
                                 $stop_add = true;
                             }
                         }
@@ -472,7 +471,7 @@ class BotMenuNewController extends Controller
                         $ingredient_price_all = bcmul($ingredient->price, $ingredient_quantity_new, 2);
                         $update = BotCartNew::where('id', $ingredient->id)->update(['quantity' => $ingredient_quantity_new, 'price_all' => $ingredient_price_all]);
                         $price_with_ingredients = bcadd($price_with_ingredients, $ingredient_price_all, 2);
-                        Log::warning('Remove: quantity: '.$quantity.'; ingredient_quantity: '.$ingredient_quantity.'; quantity_new: '.$quantity_new.'; id: '.$ingredient->id.'; i_q_n: '.$ingredient_quantity_new);
+                        Log::debug('Remove ingredient', ['quantity' => $quantity, 'ingredient_quantity' => $ingredient_quantity, 'quantity_new' => $quantity_new, 'id' => $ingredient->id, 'i_q_n' => $ingredient_quantity_new]);
                     }
                 }
                 $product_in_cart->decrement('quantity');
@@ -660,7 +659,7 @@ class BotMenuNewController extends Controller
         $input = $request->except('_token');
         if (!isset($input['address']) || $input['address'] == null || $input['address'] == '')
             return null;
-        Log::warning('address: '.$input['address']);
+        Log::debug('addressInDeliveryArea', ['address' => $input['address']]);
 
         $url = "https://api.ecopizza.com.ua/address-in-delivery-area";
         $response = Http::get($url, [
@@ -668,7 +667,7 @@ class BotMenuNewController extends Controller
             'address' => $input['address']
         ]);
 
-        Log::warning($response);
+        Log::debug('addressInDeliveryArea response', ['response' => (string)$response]);
 
         if ($response->ok() && $response->successful()) {
             $result = json_decode($response);
@@ -702,7 +701,7 @@ class BotMenuNewController extends Controller
             'time_now' => time(),
         ]);
 
-        Log::warning($response);
+        Log::debug('getTimeForOrder response', ['response' => (string)$response]);
 
         if ($response->ok() && $response->successful()) {
             $result = json_decode($response);
@@ -723,12 +722,12 @@ class BotMenuNewController extends Controller
         $user_id = $input['user_id'];
 
         try {
-            $webService = new PrestaShopWebserviceController(env('PRESTASHOP_URL'), env('PRESTASHOP_KEY'));
+            $webService = new PrestaShopWebserviceController(config('services.prestashop.url'), config('services.prestashop.key'));
 
             $products = BotCartNew::getProductsByUserId($user_id);
             $cart_price_all = $products->sum('price_all');
 
-            $cart_rules = $webService->get(array('url' => env('PRESTASHOP_URL').'/api/cart_rules?display=full&language='.self::$language), true);
+            $cart_rules = $webService->get(array('url' => config('services.prestashop.url').'/api/cart_rules?display=full&language='.self::$language), true);
             $cart_rules = json_decode($cart_rules);
             $cart_rules = collect($cart_rules->cart_rules);
 
@@ -756,9 +755,8 @@ class BotMenuNewController extends Controller
                 }
             }
 
-            Log::warning('discounts:');
+            Log::debug('discounts:', ['discounts' => $discounts]);
             if ($discounts) {
-                Log::warning($discounts);
                 foreach ($products as $product) {
                     foreach ($discounts as $discount_id) {
 //                        $cart_rule = $cart_rules->where('id', $discount_id)->first();
@@ -950,7 +948,7 @@ class BotMenuNewController extends Controller
             $customer = $customer->first();
         }
         else {
-            $xml = $webService->get(array('url' => env('PRESTASHOP_URL') .'/api/customers?schema=blank'));
+            $xml = $webService->get(array('url' => config('services.prestashop.url') .'/api/customers?schema=blank'));
 
             $xml->customer->id_default_group = 3;
             $xml->customer->id_lang          = 2;
@@ -1000,7 +998,7 @@ class BotMenuNewController extends Controller
 
     public static function createAddress($webService, $customer, $address)
     {
-        $xml = $webService->get(array('url' => env('PRESTASHOP_URL') .'/api/addresses?schema=blank'));
+        $xml = $webService->get(array('url' => config('services.prestashop.url') .'/api/addresses?schema=blank'));
 
         // Adding dinamic and mandatory fields
         // Required
@@ -1051,7 +1049,7 @@ class BotMenuNewController extends Controller
 //        $id_cart = (int)$xml->cart->id;
 
 
-        $xml = $webService->get(array('url' => env('PRESTASHOP_URL').'/api/carts/?schema=blank'));
+        $xml = $webService->get(array('url' => config('services.prestashop.url').'/api/carts/?schema=blank'));
 //        $xml->cart->id                  = $id_cart;
         $xml->cart->id_currency         = 1;
         $xml->cart->id_lang             = 2;
@@ -1100,23 +1098,16 @@ class BotMenuNewController extends Controller
         $xml_cart = $webService->add($opt);
 
         $id_cart = (int)$xml_cart->cart->id;
-        Log::warning('Cart_id = '.$id_cart);
+        Log::debug('Cart created', ['Cart_id' => $id_cart, 'Discounts' => $discounts, 'Cashback' => $cashback_pay]);
         sleep(1);
-        Log::warning('Discounts:');
-        Log::warning($discounts);
         if ($discounts) {
             foreach ($discounts as $discount_id) {
                 $cart_cart_rule = new PrestaShop_Cart_Cart_Rule;
                 $cart_cart_rule->id_cart = $id_cart;
                 $cart_cart_rule->id_cart_rule = $discount_id;
-                Log::warning($cart_cart_rule);
                 $cart_cart_rule->save();
-                Log::warning($cart_cart_rule);
             }
         }
-
-        Log::warning('Cashback: ');
-        Log::warning($cashback_pay);
 
         if ($cashback_pay > 0) {
             $new_cart_rule = new PrestaShop_Cart_Rule;
@@ -1151,7 +1142,7 @@ class BotMenuNewController extends Controller
         }
 
         if (($comment && $comment != '') || $cashback_pay > 0) {
-            $xml = $webService->get(array('url' => env('PRESTASHOP_URL').'/api/messages/?schema=blank'));
+            $xml = $webService->get(array('url' => config('services.prestashop.url').'/api/messages/?schema=blank'));
             $xml->message->id_cart = $id_cart;
             $xml->message->message = $cashback_pay > 0 ? $comment.'; '.PHP_EOL.'Сплачено кешбеком: '.$cashback_pay.' грн' : $comment;
             $opt = array(
@@ -1189,11 +1180,11 @@ class BotMenuNewController extends Controller
         $webService = $data['webService'];
         $cart = $data['cart'];
 
-        $xml = $webService->get(array('url' => env('PRESTASHOP_URL').'/api/orders/?schema=blank'));
+        $xml = $webService->get(array('url' => config('services.prestashop.url').'/api/orders/?schema=blank'));
 
         $moduleAndPayment = self::getModuleAndPayment($data['payment_type']);
 
-        $cart_rules = $webService->get(array('url' => env('PRESTASHOP_URL').'/api/cart_rules?display=full&language='.self::$language), true);
+        $cart_rules = $webService->get(array('url' => config('services.prestashop.url').'/api/cart_rules?display=full&language='.self::$language), true);
         $cart_rules = json_decode($cart_rules);
         $cart_rules = collect($cart_rules->cart_rules);
 
@@ -1244,10 +1235,7 @@ class BotMenuNewController extends Controller
         $discount_all = bcadd($discount_all, $data['cashback_pay'], 2);
         $price_with_discount = bcsub($price_with_discount, $data['cashback_pay'], 2);
 
-        Log::warning('CASHBASK:');
-        Log::warning($data['cashback_pay']);
-        Log::warning($discount_all);
-        Log::warning($price_with_discount);
+        Log::debug('CASHBACK', ['cashback_pay' => $data['cashback_pay'], 'discount_all' => $discount_all, 'price_with_discount' => $price_with_discount]);
 
         $xml->children()->children()->id_address_delivery = $data['id_address'];
         $xml->children()->children()->id_address_invoice = $data['id_address'];
@@ -1624,7 +1612,7 @@ class BotMenuNewController extends Controller
         foreach ($products as $product)
         {
             if (isset($product->id_image) && $product->id_image > 0) {
-                $addr = env('PRESTASHOP_URL')."/api/images/products/".$product->id_product."/".$product->id_image."/cart_default?ws_key=".env('PRESTASHOP_KEY')."&output_format=JSON&display=full";
+                $addr = config('services.prestashop.url')."/api/images/products/".$product->id_product."/".$product->id_image."/cart_default?ws_key=".config('services.prestashop.key')."&output_format=JSON&display=full";
 //                dd($addr);
                 $content = file_get_contents($addr);
                 if ($content) $save_file = file_put_contents(public_path().'/assets/img/thumb/cart_default_'.$product->id_product.'.webp', $content);
@@ -1639,7 +1627,7 @@ class BotMenuNewController extends Controller
 //            dd($cashback_add);
 //            $cashback_return = CashBackController::returnCashbackNew();
 //            dd($cashback_return);
-            $webService = new PrestaShopWebserviceController('https://stage.ecopizza.com.ua', env('PRESTASHOP_KEY'));
+            $webService = new PrestaShopWebserviceController('https://stage.ecopizza.com.ua', config('services.prestashop.key'));
 
 //            $xml = $webService->get(array('url' => 'https://stage.ecopizza.com.ua/'.'api/cart_rules/?schema=blank'));
 //            dd($xml);
@@ -1828,7 +1816,7 @@ class BotMenuNewController extends Controller
 
 
         try {
-            $webService = new PrestaShopWebserviceController('https://stage.ecopizza.com.ua', env('PRESTASHOP_KEY'), true);
+            $webService = new PrestaShopWebserviceController('https://stage.ecopizza.com.ua', config('services.prestashop.key'), true);
 //            $result = $webService->get(array('resource' => 'customers', 'display' => 'full'));
 
 //            $result = simplexml_load_string($result);
@@ -1932,10 +1920,10 @@ class BotMenuNewController extends Controller
     public static function testCreateOrder(LRequest $request)
     {
         $input = $request->except('_token');
-        Log::warning($input);
+        Log::debug('testCreateOrder input', ['input' => $input]);
 
         try {
-            $webService = new PrestaShopWebserviceController(env('PRESTASHOP_URL'), env('PRESTASHOP_KEY'), false);
+            $webService = new PrestaShopWebserviceController(config('services.prestashop.url'), config('services.prestashop.key'), false);
             $user_id = isset($input['user_id']) && $input['user_id'] !== null && $input['user_id'] > 0? $input['user_id'] : 522750680;
             $firstname = $input['name'];
             $lastname = ' ';
@@ -1967,8 +1955,7 @@ class BotMenuNewController extends Controller
                 $address->build = $input['build'];
                 $input['delivery_type'] = 6;
             }
-            Log::warning('------- АДРЕС --------');
-            Log::warning($address);
+            Log::debug('Address for order', ['address' => $address]);
 
             $discounts = isset($input['discounts']) && $input['discounts'] != null && is_array(json_decode($input['discounts'], true)) ? json_decode($input['discounts'], true) : null;
             $cashback_pay = isset($input['cashback_pay']) && $input['cashback_pay'] != null && $input['cashback_pay'] != '' && $input['cashback_pay'] > 0 ? $input['cashback_pay'] : 0;
@@ -2069,8 +2056,7 @@ class BotMenuNewController extends Controller
                         if ($moduleAndPayment['module'] == 'wayforpay') {
                             $send_widget = WayForPayController::sendWidget($user_id, $order_id);
 //                            $send_widget = LiqPayController::sendInvoice($user_id, $order_id);
-                            Log::warning('LiqPay Widget');
-                            Log::warning($send_widget);
+                            Log::debug('Payment Widget sent', ['result' => $send_widget]);
                             return $send_widget;
                         }
                     }

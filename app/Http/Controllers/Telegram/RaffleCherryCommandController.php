@@ -226,7 +226,7 @@ class RaffleCherryCommandController extends Controller
 
             if ($win == 1) {
                 $update = BotRaffleCherryController::updateRaffleWin($user_id, $raffle_id);
-                Log::warning('UPDATE WINNER');
+                Log::debug('Cherry raffle: UPDATE WINNER', ['user_id' => $user_id, 'raffle_id' => $raffle_id]);
                 if ($update) {
 //                    $data_text = ['chat_id' => $user_id];
 //                    $data_text['text'] = BotTextsController::getText($user_id, self::$command, 'message_win');
@@ -264,13 +264,13 @@ class RaffleCherryCommandController extends Controller
     {
         if (BotRaffleCherryController::checkUserRaffleWin($user_id) > 0) {
             Request::sendChatAction(['chat_id' => $user_id, 'action' => 'typing']);
-            Log::warning('ASK WINNER NAME');
+            Log::debug('Cherry raffle: ASK WINNER NAME', ['user_id' => $user_id]);
             if (BotRaffleCherryTakeaway::countUnReceivedByUserId($user_id) == 0) {
                 $command = 'Raffle_cherry';
                 $takeaway = new BotRaffleCherryTakeaway;
                 $takeaway->user_id = $user_id;
                 $takeaway->save();
-                Log::warning('SAVED '.$takeaway->id);
+                Log::debug('Cherry raffle: SAVED takeaway', ['takeaway_id' => $takeaway->id]);
 
                 $text = BotTextsController::getText($user_id, $command, 'ask_winner_name');
 

@@ -201,8 +201,8 @@ class ImageThumbController extends Controller
         $category_select = isset($input['category_select']) && $input['category_select'] !== null ? $input['category_select'] : 3;
 
         try {
-            $webService = new PrestaShopWebserviceController('https://ecopizza.com.ua', env('PRESTASHOP_KEY'));
-//            dd($webService, env('PRESTASHOP_KEY'));
+            $webService = new PrestaShopWebserviceController('https://ecopizza.com.ua', config('services.prestashop.key'));
+//            dd($webService, config('services.prestashop.key'));
 
             $product_features = $webService->get(array('url' => 'https://ecopizza.com.ua/api/product_feature_values?display=full&language='.BotMenuNewController::$language), true);
             $product_features = json_decode($product_features);
@@ -246,7 +246,7 @@ class ImageThumbController extends Controller
                 {
                     if (isset($product->id_default_image) && $product->id_default_image > 0) {
                         try {
-                            $content = @file_get_contents("https://ecopizza.com.ua/api/images/products/".$product->id."/".$product->id_default_image."/cart_default?ws_key=".env('PRESTASHOP_KEY')."&output_format=JSON&display=full");
+                            $content = @file_get_contents("https://ecopizza.com.ua/api/images/products/".$product->id."/".$product->id_default_image."/cart_default?ws_key=".config('services.prestashop.key')."&output_format=JSON&display=full");
                             if ($content) {
                                 file_put_contents(public_path().'/assets/img/thumb/'.$abra_kadabra_new.$product->id.'.webp', $content);
                             }
@@ -258,8 +258,7 @@ class ImageThumbController extends Controller
                 }
             }
         } catch (PrestaShopWebserviceExceptionController $e) {
-            Log::warning('Error!!!');
-            Log::warning($e);
+            Log::warning('ImageThumb PrestaShop error', ['error' => $e->getMessage()]);
             $data = [
                 'category_select' => $category_select,
                 'products' => null,

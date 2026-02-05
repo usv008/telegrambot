@@ -30,4 +30,10 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'prestashop' => [
+        'url' => env('PRESTASHOP_URL'),
+        'key' => env('PRESTASHOP_KEY'),
+        'callback' => env('PRESTASHOP_CALLBACK'),
+    ],
+
 ];

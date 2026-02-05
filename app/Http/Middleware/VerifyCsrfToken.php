@@ -31,7 +31,7 @@ class VerifyCsrfToken extends Middleware
         $this->except[] = env('LIQPAY_CALLBACK');
         $this->except[] = env('WAYFORPAY_CALLBACK');
         $this->except[] = env('WAYFORPAY_UBUNTU_CALLBACK');
-        $this->except[] = env('PRESTASHOP_CALLBACK');
+        $this->except[] = config('services.prestashop.callback');
         $this->except[] = env('DRINKCHERRY_TELEGRAM_BOT_API_KEY');
         //print_r ($this->except);
     }

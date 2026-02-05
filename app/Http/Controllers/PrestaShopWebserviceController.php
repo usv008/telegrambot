@@ -312,7 +312,7 @@ class PrestaShopWebserviceController extends BaseController
         if (isset($options['resource'], $options['postXml']) || isset($options['url'], $options['postXml'])) {
             $url = (isset($options['resource']) ? $this->url . '/api/' . $options['resource'] : $options['url']);
             $xml = $options['postXml'];
-            $url .= '&ws_key='.env('PRESTASHOP_KEY');
+            $url .= '&ws_key='.config('services.prestashop.key');
             if (isset($options['id_shop'])) {
                 $url .= '&id_shop=' . $options['id_shop'];
             }
@@ -366,7 +366,7 @@ class PrestaShopWebserviceController extends BaseController
     {
         if (isset($options['url'])) {
             $url = $options['url'];
-            $url .= '&ws_key='.env('PRESTASHOP_KEY');
+            $url .= '&ws_key='.config('services.prestashop.key');
             if ($json) $url .= '&output_format=JSON';
         } elseif (isset($options['resource'])) {
             $url = $this->url . '/api/' . $options['resource'];
@@ -374,7 +374,7 @@ class PrestaShopWebserviceController extends BaseController
             if (isset($options['id'])) {
                 $url .= '/' . $options['id'];
             }
-            $url_params['ws_key'] = env('PRESTASHOP_KEY');
+            $url_params['ws_key'] = config('services.prestashop.key');
 
             $params = array('filter', 'display', 'sort', 'limit', 'id_shop', 'id_group_shop', 'schema', 'language', 'date', 'price');
             foreach ($params as $p) {
@@ -417,7 +417,7 @@ class PrestaShopWebserviceController extends BaseController
                 $url .= '/' . $options['id'];
             }
 
-            $url_params['ws_key'] = env('PRESTASHOP_KEY');
+            $url_params['ws_key'] = config('services.prestashop.key');
             $params = array('filter', 'display', 'sort', 'limit');
             foreach ($params as $p) {
                 foreach ($options as $k => $o) {
@@ -458,7 +458,7 @@ class PrestaShopWebserviceController extends BaseController
         } elseif ((isset($options['resource'], $options['id']) || isset($options['url'])) && $options['putXml']) {
             $url = (isset($options['url']) ? $options['url'] :
                 $this->url . '/api/' . $options['resource'] . '/' . $options['id']);
-            $url .= '&ws_key='.env('PRESTASHOP_KEY');
+            $url .= '&ws_key='.config('services.prestashop.key');
             $xml = $options['putXml'];
             if (isset($options['id_shop'])) {
                 $url .= '&id_shop=' . $options['id_shop'];
@@ -514,7 +514,7 @@ class PrestaShopWebserviceController extends BaseController
             throw new PrestaShopWebserviceExceptionController('Bad parameters given');
         }
 
-        $url .= '&ws_key='.env('PRESTASHOP_KEY');
+        $url .= '&ws_key='.config('services.prestashop.key');
         if (isset($options['id_shop'])) {
             $url .= '&id_shop=' . $options['id_shop'];
         }

@@ -13,7 +13,7 @@ class ApiPrestaShopController extends BaseController
     public static $key = 'NXUAQSSLS82SFTVBMXCBMCFIFRPVWJZR';
 
     public static function getUrlApi() {
-        return str_replace('https://', '', env('PRESTASHOP_URL')) . '/api';
+        return str_replace('https://', '', config('services.prestashop.url')) . '/api';
     }
 
     public static function get($url)
