@@ -91,7 +91,7 @@ class ProcessSendingMessages implements ShouldQueue
         $history->post_id = $this->post_id;
         $history->user_id = $this->user_id;
         $history->sent = $sent;
-        $history->result = $sent === 0 ? $result : null;
+        $history->result = $sent === 0 ? (string)$result : '{}';
         $history->date_z = date("Y-m-d H:i:s");
         $history->save();
 
