@@ -114,10 +114,10 @@ class BotMailingController extends Controller
                 return $row->button_text2.' ('.$row->button2.')';
             })
             ->addColumn('send_yes', function($row){
-                return $row->send_yes.' ('.bcmul(bcdiv($row->send_yes, $row->total, 10), 100, 4).'%)';
+                return $row->total == 0 ? $row->send_yes.' (0%)' : $row->send_yes.' ('.bcmul(bcdiv($row->send_yes, $row->total, 10), 100, 4).'%)';
             })
             ->addColumn('send_no', function($row){
-                return $row->send_no.' ('.bcmul(bcdiv($row->send_no, $row->total, 10), 100, 4).'%)';
+                return $row->total == 0 ? $row->send_no.' (0%)' : $row->send_no.' ('.bcmul(bcdiv($row->send_no, $row->total, 10), 100, 4).'%)';
             })
             ->addColumn('ctr', function($row){
                 if ($row->send_yes !== 0) $result = bcmul(bcdiv(bcadd($row->button1, $row->button2, 10), $row->send_yes, 10), 100, 4).'%';
